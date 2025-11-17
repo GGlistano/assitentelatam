@@ -61,8 +61,16 @@ Las migraciones de base de datos ya están incluidas en `supabase/migrations/`:
 
 La Edge Function para la IA está en `supabase/functions/chat-ai/index.ts`
 
-**Variables de entorno necesarias en Supabase:**
-- `OPENAI_API_KEY` - Tu API key de OpenAI
+**IMPORTANTE: Configurar la API key de OpenAI de forma SEGURA:**
+
+1. Ve a tu proyecto en Supabase Dashboard
+2. Navega a **Settings > Edge Functions**
+3. En la sección de **Secrets**, añade:
+   - Nombre: `OPENAI_API_KEY`
+   - Valor: Tu API key de OpenAI (empieza con `sk-`)
+4. Guarda el secret
+
+**NUNCA pongas la API key directamente en el código!**
 
 ### 6. Ejecutar en Desarrollo
 

@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 
 interface ChatRequest {
   message: string;
@@ -22,6 +22,19 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    if (!OPENAI_API_KEY) {
+      return new Response(
+        JSON.stringify({ error: "OpenAI API key not configured" }),
+        {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
     const { message, conversationHistory = [] }: ChatRequest = await req.json();
 
     if (!message) {
