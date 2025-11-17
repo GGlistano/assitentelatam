@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase, Message, Conversation } from '../lib/supabase';
 
-export function useChat(conversationId: string) {
+export function useChat(conversationId: string, userId: string) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -86,6 +86,7 @@ export function useChat(conversationId: string) {
         .from('messages')
         .insert({
           conversation_id: conversationId,
+          user_id: userId,
           content,
           sender: 'user',
         })
@@ -108,7 +109,9 @@ export function useChat(conversationId: string) {
 
       setIsTyping(true);
 
-      const conversationHistory = messages.map((msg) => ({
+      const allMessages = [...messages, userMessage];
+      const last15Messages = allMessages.slice(-15);
+      const conversationHistory = last15Messages.map((msg) => ({
         role: msg.sender === 'user' ? 'user' : 'assistant',
         content: msg.content,
       }));
@@ -140,6 +143,7 @@ export function useChat(conversationId: string) {
         .from('messages')
         .insert({
           conversation_id: conversationId,
+          user_id: userId,
           content: aiResponse,
           sender: 'assistant',
           is_read: true,

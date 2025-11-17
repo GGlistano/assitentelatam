@@ -4,20 +4,74 @@ import { ChatHeader } from './components/ChatHeader';
 import { MessageBubble } from './components/MessageBubble';
 import { ChatInput } from './components/ChatInput';
 import { TypingIndicator } from './components/TypingIndicator';
+import { LoginForm } from './components/LoginForm';
+import { AdminPanel } from './components/AdminPanel';
+import { useAuth } from './contexts/AuthContext';
 import { useChat } from './hooks/useChat';
+import { LogOut } from 'lucide-react';
 
 function App() {
+  const { user, loading: authLoading, login, logout } = useAuth();
+  const [showAdmin, setShowAdmin] = useState(false);
+
+  if (authLoading) {
+    return (
+      <div className="h-screen bg-[#0a1014] flex items-center justify-center">
+        <div className="text-white text-lg">Carregando...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LoginForm onLogin={login} />;
+  }
+
+  if (user.is_admin && showAdmin) {
+    return <AdminPanel onBack={() => setShowAdmin(false)} />;
+  }
+
+  if (user.is_admin && !showAdmin) {
+    return (
+      <div className="h-screen bg-gradient-to-br from-[#128C7E] to-[#075E54] flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+          <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+            Bem-vindo, Admin!
+          </h1>
+          <div className="space-y-4">
+            <button
+              onClick={() => setShowAdmin(true)}
+              className="w-full bg-[#128C7E] text-white py-3 rounded-lg font-semibold hover:bg-[#0F7A6D] transition"
+            >
+              Acessar Painel Admin
+            </button>
+            <button
+              onClick={logout}
+              className="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition flex items-center justify-center gap-2"
+            >
+              <LogOut className="w-5 h-5" />
+              Sair
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return <ChatApp user={user} onLogout={logout} />;
+}
+
+function ChatApp({ user, onLogout }: { user: any; onLogout: () => void }) {
   const [conversationId, setConversationId] = useState<string | null>(null);
 
   useEffect(() => {
     initializeConversation();
-  }, []);
+  }, [user.id]);
 
   const initializeConversation = async () => {
     const { data: existingConversation } = await supabase
       .from('conversations')
       .select('id')
-      .limit(1)
+      .eq('user_id', user.id)
       .maybeSingle();
 
     if (existingConversation) {
@@ -25,7 +79,11 @@ function App() {
     } else {
       const { data: newConversation } = await supabase
         .from('conversations')
-        .insert({ title: 'Dr. Juan', avatar_url: '/doutor juan.png' })
+        .insert({
+          title: 'Dr. Juan',
+          avatar_url: '/doutor juan.png',
+          user_id: user.id,
+        })
         .select()
         .single();
 
@@ -43,11 +101,20 @@ function App() {
     );
   }
 
-  return <ChatView conversationId={conversationId} />;
+  return <ChatView conversationId={conversationId} userId={user.id} onLogout={onLogout} />;
 }
 
-function ChatView({ conversationId }: { conversationId: string }) {
-  const { messages, conversation, loading, sending, isTyping, sendMessage, messagesEndRef } = useChat(conversationId);
+function ChatView({
+  conversationId,
+  userId,
+  onLogout,
+}: {
+  conversationId: string;
+  userId: string;
+  onLogout: () => void;
+}) {
+  const { messages, conversation, loading, sending, isTyping, sendMessage, messagesEndRef } =
+    useChat(conversationId, userId);
 
   if (loading) {
     return (
@@ -59,11 +126,20 @@ function ChatView({ conversationId }: { conversationId: string }) {
 
   return (
     <div className="h-screen flex flex-col bg-[#efeae2]">
-      <ChatHeader
-        title={conversation?.title || 'Dr. Juan'}
-        subtitle="Online"
-        avatarUrl={conversation?.avatar_url}
-      />
+      <div className="relative">
+        <ChatHeader
+          title={conversation?.title || 'Dr. Juan'}
+          subtitle="Online"
+          avatarUrl={conversation?.avatar_url}
+        />
+        <button
+          onClick={onLogout}
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-200 transition"
+          title="Sair"
+        >
+          <LogOut className="w-5 h-5" />
+        </button>
+      </div>
 
       <div
         className="flex-1 overflow-y-auto py-4"
