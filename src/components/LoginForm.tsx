@@ -31,13 +31,13 @@ export function LoginForm({ onLogin }: LoginFormProps) {
             />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Dr. Juan</h1>
-          <p className="text-gray-600 text-center">Seu assistente de emagrecimento</p>
+          <p className="text-gray-600 text-center">Tu asistente de adelgazamiento</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
-              Nome Completo
+              Nombre Completo
             </label>
             <input
               id="fullName"
@@ -45,7 +45,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#128C7E] focus:border-transparent outline-none transition"
-              placeholder="Digite seu nome completo"
+              placeholder="Ingresa tu nombre completo"
               required
               disabled={loading}
             />
@@ -53,7 +53,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
 
           <div>
             <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700 mb-2">
-              Número do WhatsApp
+              Número de WhatsApp
             </label>
             <input
               id="whatsapp"
@@ -61,12 +61,12 @@ export function LoginForm({ onLogin }: LoginFormProps) {
               value={whatsappNumber}
               onChange={(e) => setWhatsappNumber(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#128C7E] focus:border-transparent outline-none transition"
-              placeholder="849535770 ou 5584953577000"
+              placeholder="Ingresa tu número de WhatsApp"
               required
               disabled={loading}
             />
             <p className="mt-1 text-xs text-gray-500">
-              Digite seu número com ou sem código do país
+              Con o sin código de país
             </p>
           </div>
 
@@ -75,13 +75,13 @@ export function LoginForm({ onLogin }: LoginFormProps) {
             disabled={loading || !fullName.trim() || !whatsappNumber.trim()}
             className="w-full bg-[#25D366] text-white py-3 rounded-lg font-semibold hover:bg-[#20BA5A] transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
-            {loading ? 'Entrando...' : 'Entrar'}
+            {loading ? 'Ingresando...' : 'Ingresar'}
           </button>
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-600">
-          <p>Entre com seu WhatsApp para acessar suas conversas</p>
-          <p className="mt-1">Primeira vez? Será criada uma conta automaticamente</p>
+          <p>Ingresa con tu WhatsApp para acceder a tus conversaciones</p>
+          <p className="mt-1">¿Primera vez? Se creará una cuenta automáticamente</p>
         </div>
       </div>
     </div>
