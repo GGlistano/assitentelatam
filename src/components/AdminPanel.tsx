@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { ArrowLeft, Users, MessageSquare, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, Users, MessageSquare, Calendar, Clock, RefreshCw } from 'lucide-react';
 
 interface User {
   id: string;
@@ -106,6 +106,14 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
     }
   };
 
+  const handleRefresh = () => {
+    loadUsers();
+    loadStats();
+    if (selectedUser) {
+      loadUserMessages(selectedUser.id);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR', {
@@ -139,6 +147,13 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
               </button>
               <h1 className="text-2xl font-bold text-gray-800">Painel Admin</h1>
             </div>
+            <button
+              onClick={handleRefresh}
+              className="flex items-center gap-2 px-4 py-2 bg-[#25D366] text-white rounded-lg hover:bg-[#20BA5A] transition font-medium"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Atualizar
+            </button>
           </div>
         </div>
       </div>
@@ -183,8 +198,8 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-280px)]">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col">
-            <div className="p-4 border-b border-gray-200">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-gray-200 flex-shrink-0">
               <h2 className="text-lg font-semibold text-gray-800">Usuários</h2>
             </div>
             <div className="flex-1 overflow-y-auto">
@@ -192,7 +207,7 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
                 <button
                   key={user.id}
                   onClick={() => setSelectedUser(user)}
-                  className={`w-full p-4 border-b border-gray-100 hover:bg-gray-50 transition text-left ${
+                  className={`w-full p-4 border-b border-gray-100 hover:bg-gray-50 transition text-left flex-shrink-0 ${
                     selectedUser?.id === user.id ? 'bg-blue-50' : ''
                   }`}
                 >
@@ -217,8 +232,8 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col">
-            <div className="p-4 border-b border-gray-200">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-gray-200 flex-shrink-0">
               <h2 className="text-lg font-semibold text-gray-800">
                 {selectedUser ? `Conversas - ${selectedUser.full_name}` : 'Selecione um usuário'}
               </h2>
@@ -237,7 +252,7 @@ export function AdminPanel({ onBack }: AdminPanelProps) {
               {selectedUser && messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`p-3 rounded-lg ${
+                  className={`p-3 rounded-lg flex-shrink-0 ${
                     message.sender === 'user'
                       ? 'bg-blue-50 ml-8'
                       : 'bg-gray-100 mr-8'
